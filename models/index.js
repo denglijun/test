@@ -33,7 +33,7 @@ sequelize
       return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
     })
     .forEach(file => {
-      var model = sequelize['import'](path.join(__dirname, file));
+      var model = sequelize.import(path.join(__dirname, file));
       db[model.name] = model;
     });
   
@@ -51,31 +51,4 @@ sequelize
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-//增加单条数据
-db.addData = async function (tablename,data) {
-  return tablename.create(data);
-}
-//修改数据
-db.updateData = async function(tablename,data) {
-  return await tablename.update(data,{where :{uid: data.uid}});
-}
-db.deleteData = async function(tablename,id){
-  return await tablename.destroy({where : {uid : id}});
-};
-db.findOneData = async function(tablename,id){
-  return await tablename.findById(id);
-};
-db.search = async function(condition, offset, limit){  
-  return User.findAndCountAll({where : condition, offset : offset, limit : limit});
-};
-db.dataList = async function(){
-  const data =  await User.findAll({});
-  let datalist = [];
-  if (data) {
-      for(let i=0; i<data.length; i++) {
-          datalist.push(data[i].dataValues);
-      }
-  }
-  return datalist;
-};
 module.exports = db;
