@@ -1,13 +1,46 @@
-const router = require('koa-router')()
+const router = require('koa-router')();
+const User = require('../models').user;
 
-router.prefix('/users')
+router.prefix('/users');
 
-router.get('/', function (ctx, next) {
+router.get('/getUser', function (ctx, next) {
   ctx.body = 'this is a users response!'
-})
+});
+//登录
+router.post('/login', function (ctx, next) {
+  console.log(222);
+  
+  // let username = ctx.request.body.params.username;
+  // let pwd = ctx.request.body.params.password;
+  // let pwd = ctx.body.password;
+  // let user = User.findAll({
+  //   where: {
+  //     username: username
+  //   }
+  // });
+  // if ( user ) {
+  //   if ( user.pwd == pwd ) {
+  //     ctx.body = {
+  //       code: 200,
+  //       msg: '登录成功',
+  //       data: user
+  //     };
+  //   } else {
+  //     ctx.body = {
+  //       code: 10000,
+  //       msg: '密码错误',
+  //       data: ''
+  //     };
+  //   }
+  // } else {
+    // ctx.body = {
+    //   code: 10001,
+    //   msg: '用户不存在',
+    //   data: ''
+    // };
+  return JSON.stringify({code:10001,msg:'用户不存在',data:''});
+});
 
-router.get('/bar', function (ctx, next) {
-  ctx.body = 'this is a users/bar response'
-})
+
 
 module.exports = router

@@ -8,6 +8,10 @@ const logger = require('koa-logger')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
+const roles = require('./routes/roles')
+
+const cors = require('koa2-cors'); //解决跨域
+
 
 // error handler
 onerror(app)
@@ -35,6 +39,19 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(roles.routes(), roles.allowedMethods())
+
+//配置跨域
+app.use(
+  cors({
+    origin: '*',
+    exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+    maxAge: 5,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  })
+);
 
 // error-handling
 app.on('error', (err, ctx) => {
