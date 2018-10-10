@@ -17,6 +17,17 @@ module.exports = (sequelize,DataTypes) => {
             allowNull: false,
             comment: "节点标志符"
         },
+        sort : {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            comment: '节点顺序'
+        },
+        isshow : {
+            type: DataTypes.INTEGER(2),
+            allowNull: false,
+            defaultValue: 1,
+            comment: '节点是否显示,1显示，0不显示',
+        },
         link: {
             type: DataTypes.STRING(64),
             allowNull: true,

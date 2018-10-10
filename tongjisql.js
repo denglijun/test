@@ -1,0 +1,20 @@
+module.exports = {
+    "blindnum" : "select count(id) as blindnum  from users where role=1", //盲人数量
+    "friendsnum" : "select count(id) as friendsnum  from users where role=2", //亲友数
+    "volunteersnum" : "select count(id) as volunteersnum  from users where role=4 or (role=2 and service = 2)", //志愿者数
+    "customersnum" : "select count(id) as customersnum  from users where role=8", //客服者数
+    "bTf" : "select blindId,count(angelId) as angelnum from `blind2family-through` group by (blindId)", //每个盲人绑定的亲友数
+    "fTb" : "select angelId,count(blindId) as blindnum from `blind2family-through` group by (angelId)", //每个亲友关联的盲人账号数
+    "daycallnum" : "select count(*) as daycallnum,curdate() as cur from `call_orders` where date((date_add(createdAt, interval 8 hour))) = curdate()", //呼叫次数
+    "daycallangel" : "select count(*) as daycallangel,date(date_add(createdAt, interval 8 hour)) cur from `call_orders` where service_type=1 and date(date_add(createdAt, interval 8 hour))=curdate() group by cur", //呼叫亲友
+    "daycallvo" : "select count(*) as daycallvo,date(date_add(createdAt, interval 8 hour)) cur from `call_orders` where service_type=2 and date(date_add(createdAt, interval 8 hour))=curdate() group by cur",//呼叫志愿者
+    "daycallcus" : "select count(*) as daycallcus,date(date_add(createdAt, interval 8 hour)) cur from `call_orders` where service_type=3 and date(date_add(createdAt, interval 8 hour))=curdate() group by cur", //呼叫客服
+    "dayanswernum" : "select count(*) as dayanswernum,curdate() as cur from `answered_calls` where date((date_add(createdAt, interval 8 hour))) = curdate()",//接听次数
+    "daychatnum" : "select count(*) as daychatnum,curdate() as cur from `chat_orders` where date((date_add(createdAt, interval 8 hour))) = curdate()", //接通次数
+    "answerSuccessRate" : "select callnums,callsuccessnum,CONCAT(ROUND(temp.callsuccessnum / c.callnums * 100,2),'','%') as successrate,calldate from (select count(*) as callnums,date(date_add(createdAt, interval 8 hour)) calldate from call_orders group by calldate) as c,(select count(*) as callsuccessnum,date(date_add(answered_calls.createdAt, interval 8 hour)) answerdate from call_orders,answered_calls where call_orders.chat_id=answered_calls.chat_id group by answerdate) as temp where c.calldate = temp.answerdate and calldate = curdate()",//接听成功率
+    "chatSuccessRate" : "select answernums,chatnums,CONCAT(ROUND(c.chatnums / a.answernums * 100,2),'','%') as successrate,chatdate from (select count(*) as answernums,date(date_add(createdAt, interval 8 hour)) answerdate from answered_calls group by answerdate) as a,(select count(*) as chatnums,date(date_add(chat_orders.createdAt, interval 8 hour)) chatdate from chat_orders,answered_calls where chat_orders.chat_id=answered_calls.chat_id group by chatdate) as c where a.answerdate = c.chatdate and chatdate=curdate()", //接通成功率
+    "answerfail" : "select count(*) as toalcall,hangup_reason as reason,date((date_add(createdAt, interval 8 hour))) as calldate from call_orders where date((date_add(createdAt, interval 8 hour))) = curdate() group by hangup_reason,calldate", //接听失败原因统计
+    "friendaudio" : "select count(*) as friendaudio,date((date_add(createdAt, interval 8 hour))) as chatdate from chat_orders where first_audioa=0 and date((date_add(createdAt, interval 8 hour)))=curdate() group by chatdate", //亲友端音频出问题
+    "blindaudio" : "select count(*) as blindaudio,date((date_add(createdAt, interval 8 hour))) as chatdate from chat_orders where first_audiob=0 and date((date_add(createdAt, interval 8 hour)))=curdate() group by chatdate", //盲人端音频出问题
+    "blindvideo" : "select count(*) as blindvideo,date((date_add(createdAt, interval 8 hour))) as chatdate from chat_orders where first_videob=0 and date((date_add(createdAt, interval 8 hour)))=curdate() group by chatdate", //盲人端视频出问题
+};

@@ -16,7 +16,7 @@ module.exports = (sequelize,DataTypes) => {
             allowNull: true,
             comment: "亲友手机",
         },
-        bindBlindNum : {
+        friendBlindNum : {
             type:DataTypes.INTEGER,
             defaultValue: 0,
             comment: "绑定盲人的数量",

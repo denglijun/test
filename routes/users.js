@@ -7,38 +7,35 @@ router.get('/getUser', function (ctx, next) {
   ctx.body = 'this is a users response!'
 });
 //登录
-router.post('/login', function (ctx, next) {
-  console.log(222);
-  
-  // let username = ctx.request.body.params.username;
-  // let pwd = ctx.request.body.params.password;
-  // let pwd = ctx.body.password;
-  // let user = User.findAll({
-  //   where: {
-  //     username: username
-  //   }
-  // });
-  // if ( user ) {
-  //   if ( user.pwd == pwd ) {
-  //     ctx.body = {
-  //       code: 200,
-  //       msg: '登录成功',
-  //       data: user
-  //     };
-  //   } else {
-  //     ctx.body = {
-  //       code: 10000,
-  //       msg: '密码错误',
-  //       data: ''
-  //     };
-  //   }
-  // } else {
-    // ctx.body = {
-    //   code: 10001,
-    //   msg: '用户不存在',
-    //   data: ''
-    // };
-  return JSON.stringify({code:10001,msg:'用户不存在',data:''});
+router.post('/login', async (ctx, next) => {
+  let username = ctx.request.body.params.username;
+  let pwd = ctx.request.body.params.password;
+  let user = await User.findAll({
+    where: {
+      username: username
+    }
+  });
+  if ( user ) {
+    if ( user[0].pwd == pwd ) {
+      ctx.response.body = {
+        code: 200,
+        msg: '登录成功',
+        data: user[0]
+      };
+    } else {
+      ctx.response.body = {
+        code: 10000,
+        msg: '密码错误',
+        data: ''
+      };
+    }
+  } else {
+    ctx.response.body = {
+      code: 10001,
+      msg: '用户不存在',
+      data: ''
+    };
+  }
 });
 
 

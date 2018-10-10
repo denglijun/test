@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize,DataTypes) => {
-    const AppBlindFriend = sequelize.define('AppBlindFriend',{
+    const CountBlind2Friend = sequelize.define('CountBlind2Friend',{
         blindId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -29,5 +29,5 @@ module.exports = (sequelize,DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    return AppBlindFriend;
+    return CountBlind2Friend;
 };
