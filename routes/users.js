@@ -38,6 +38,25 @@ router.post('/login', async (ctx, next) => {
   }
 });
 
+router.post("/add",async(ctx,next) => {
+  let params = ctx.request.body;
+  let re = await User.create({username:params.username,pwd:params.pwd,tel:params.tel,email:params.email,status:params.status});
+  if ( re.dataValues ) {
+      ctx.response.body = {
+          code: 200,
+          msg: '操作成功',
+          data: re.dataValues
+      };
+      
+  } else {
+      ctx.response.body = {
+          code: 10002,
+          msg: '操作失败',
+          data: ''
+      };
+  }
+});
+
 
 
 module.exports = router

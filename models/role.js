@@ -6,10 +6,30 @@ module.exports = (sequelize,DataTypes) => {
             allowNull: false,
             comment: "角色节点"
         },
+        englishname : {
+            type: DataTypes.STRING(64),
+            allowNull: false,
+            comment: "英文名称"
+        },
+        is_active : {
+            type: DataTypes.INTEGER,
+            defaultValue: 1,
+            comment: "是否激活，1激活,0未激活"
+        },
+        pid: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            comment: '父节点id'
+        },
+        sort: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            comment: "排序"
+        },
         NIDS : {
             type:DataTypes.INTEGER,
             allowNull: true,
-            comment: "节点id　逗号隔开",
+            comment: "节点id逗号隔开",
         },
     },
     {
