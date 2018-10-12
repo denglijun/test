@@ -5,6 +5,10 @@ const CountChatFailReason = require('../models').CountChatFailReason;
 const CountCallanswerchat = require('../models').CountCallanswerchat;
 const CountBlind2Friend = require('../models').CountBlind2Friend;
 const CountAnswerFailReason = require('../models').CountAnswerFailReason;
+const CountCallDetail = require('../models').CountCallDetail;
+const CountChatDetail = require('../models').CountChatDetail;
+
+
 const moment = require("moment");
 
 router.prefix('/tongji');
@@ -76,6 +80,30 @@ router.get('/getCountAnswerFailReason', async (ctx, next) => {
     let page = ctx.query.pageNo;
     let pagenum = ctx.query.pageSize;
     let users = await CountAnswerFailReason.findAll({
+        offset: (parseInt(page)-1)*parseInt(pagenum),
+        limit: parseInt(pagenum)
+    });
+    ctx.response.body = {records:users,total:total.length};
+});
+router.get('/calldetail', async (ctx, next) => {
+    let total = await CountCallDetail.findAll({
+        attributes: ['id']
+    });
+    let page = ctx.query.pageNo;
+    let pagenum = ctx.query.pageSize;
+    let users = await CountCallDetail.findAll({
+        offset: (parseInt(page)-1)*parseInt(pagenum),
+        limit: parseInt(pagenum)
+    });
+    ctx.response.body = {records:users,total:total.length};
+});
+router.get('/chatdetail', async (ctx, next) => {
+    let total = await CountChatDetail.findAll({
+        attributes: ['id']
+    });
+    let page = ctx.query.pageNo;
+    let pagenum = ctx.query.pageSize;
+    let users = await CountChatDetail.findAll({
         offset: (parseInt(page)-1)*parseInt(pagenum),
         limit: parseInt(pagenum)
     });

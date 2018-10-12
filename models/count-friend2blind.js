@@ -1,30 +1,50 @@
 'use strict';
 module.exports = (sequelize,DataTypes) => {
     const CountFriend2blind = sequelize.define('CountFriend2blind',{
-        friendId: {
+        zero : {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            comment: "亲友ID",
-        },
-        friendname : {
-            type: DataTypes.STRING(64),
             allowNull: true,
-            comment: "亲友名称",
+            comment: "绑定0个盲人的亲友数",
         },
-        friendtel : {
-            type:DataTypes.STRING(16),
+        one : {
+            type: DataTypes.INTEGER,
             allowNull: true,
-            comment: "亲友手机",
+            comment: "绑定一个盲人的亲友数",
         },
-        friendBlindNum : {
+        two : {
             type:DataTypes.INTEGER,
-            defaultValue: 0,
-            comment: "绑定盲人的数量",
+            allowNull: true,
+            comment: "绑定两个盲人的亲友数",
         },
+        three : {
+            type:DataTypes.INTEGER,
+            allowNull: true,
+            comment: "绑定三个盲人的亲友数",
+        },
+        four : {
+            type:DataTypes.INTEGER,
+            allowNull: true,
+            comment: "绑定四个盲人的亲友数",
+        },
+        five : {
+            type:DataTypes.INTEGER,
+            allowNull: true,
+            comment: "绑定五个盲人的亲友数",
+        },
+        sixtoten : {
+            type:DataTypes.INTEGER,
+            allowNull: true,
+            comment: "绑定6-10个盲人的亲友数",
+        },
+        overten : {
+            type:DataTypes.INTEGER,
+            allowNull: true,
+            comment: "绑定10个以上盲人的亲友数",
+        }
     },
     {
         tableName: 'count_friend2blind',
-        comment: 'APP端亲友绑定盲人的数量统计表',
+        comment: 'APP端亲友绑定盲人的分布图',
         charset: 'utf8',
         collate: 'utf8_general_ci',
     });
