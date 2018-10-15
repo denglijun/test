@@ -2,8 +2,8 @@ const db = require('./appdb')();
 const sqls = require('./tongjisql');
 const sysdb = require('./sysdb');
 const moment = require('moment');
-const time = moment().format('YYYY-MM-DD hh:mm:ss');
-const yestime = moment(Date.now() - 6 * 60 * 60 * 1000).format('YYYY-MM-DD'); // 统计时的昨天日期
+const time = moment().format('YYYY-MM-DD HH:mm:ss');
+const yestime = moment(Date.now() - 24 * 60 * 60 * 1000).format('YYYY-MM-DD'); // 统计时的昨天日期
 db.init();
 const con = db.connect();
 var blindnum = new Promise(function (resolve, reject) {
@@ -102,11 +102,27 @@ var blindvideo = new Promise(function (resolve,reject) {
 // 同时执行p1和p2，并在它们都完成后执行then:
 Promise.all([blindnum,friendsnum,volunteersnum,customersnum,daycallangel,daycallvo,daycallcus,daycallnum,dayanswernum,daychatnum,friendaudio,blindaudio,blindvideo]).then(function (results) {
     console.log(results);
-    var b = results[0][0].blindnum;
-    var f = results[1][0].friendsnum;
-    var v = results[2][0].volunteersnum;
-    var c = results[3][0].customersnum;
-    if ( results[4][0] > 0 ) {
+    if ( results[0].length > 0 ) {
+        var b = results[0][0].blindnum;
+    } else {
+        var b = 0;
+    }
+    if ( results[1].length > 0 ) {
+        var f = results[1][0].friendsnum;
+    } else {
+        var f = 0;
+    }
+    if ( results[2].length > 0 ) {
+        var v = results[2][0].volunteersnum;
+    } else {
+        var v = 0;
+    }
+    if ( results[3].length > 0 ) {
+        var c = results[3][0].customersnum;
+    } else {
+        var c = 0;
+    }
+    if ( results[4].length > 0 ) {
         var callangel = results[4][0].daycallangel;
     } else {
         var callangel = 0;
@@ -121,11 +137,31 @@ Promise.all([blindnum,friendsnum,volunteersnum,customersnum,daycallangel,daycall
     } else {
         var callcus = 0;
     }
-    var callnum =  results[7][0].daycallnum;
-    var answernum =  results[8][0].dayanswernum;
-    var chatnum =  results[9][0].daychatnum;
-    var answerRate = Math.round(parseFloat(answernum) / parseFloat(callnum) * 10000) / 100.00 + "%";
-    var chatRate =Math.round(parseFloat(chatnum) / parseFloat(answernum) * 10000) / 100.00 + "%";
+    if (  results[7].length > 0 ) {
+        var callnum =  results[7][0].daycallnum;
+    } else {
+        var callnum = 0;
+    }
+    if ( results[8].length > 0 ) {
+        var answernum =  results[8][0].dayanswernum;
+    } else {
+        var answernum = 0;
+    }
+    if ( results[9].length > 0 ) {
+        var chatnum =  results[9][0].daychatnum;
+    } else {
+        var chatnum = 0;
+    }
+    if ( parseFloat(callnum) > 0 ) {
+        var answerRate = Math.round(parseFloat(answernum) / parseFloat(callnum) * 10000) / 100.00 + "%";
+    } else {
+        var answerRate = 0;
+    }
+    if ( parseFloat(answernum) > 0 ) {
+        var chatRate =Math.round(parseFloat(chatnum) / parseFloat(answernum) * 10000) / 100.00 + "%";
+    } else {
+        var chatRate = 0;
+    }
     if ( results[10].length > 0 ) {
         var faudio = results[10][0].friendaudio;
     } else {

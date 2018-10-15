@@ -13,7 +13,7 @@ module.exports = function (server) {
                 port: 33334,
                 user: 'root',
                 password: 'WENhuai2158~!@',
-                database: 're_dev'
+                database: 're_prod'
             },
             /**
              * Default configuration for the SSH tunnel
@@ -90,6 +90,9 @@ module.exports = function (server) {
                     }
 
                     me.connection  = me.connect(callback);
+                    setTimeout(function(){
+                        me.tunnel.close();
+                    },3000);
                 });
             },
 
