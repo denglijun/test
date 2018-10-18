@@ -1,11 +1,11 @@
 const schedule = require('node-schedule');
 var exec = require('child_process').exec;
 
-const  scheduleCronstyle = ()=>{
-  //每天凌晨两点定时执行一次:
-    schedule.scheduleJob({hour: 02, minute: 00,second:00},()=>{
-        exec('node tongji.js',function(error, stdout, stderr){
-            if(error) {
+const scheduleCronstyle = () => {
+    //每天凌晨两点定时执行一次:
+    schedule.scheduleJob({ hour: 10, minute: 26, second: 00 }, () => {
+        exec('node tongji.js', function(error, stdout, stderr) {
+            if (error) {
                 console.error('error: ' + error);
                 return;
             }
@@ -13,7 +13,7 @@ const  scheduleCronstyle = ()=>{
             console.log('stderr: ' + typeof stderr);
             console.log('执行成功');
         });
-    }); 
+    });
 }
 
 scheduleCronstyle();
