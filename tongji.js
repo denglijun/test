@@ -285,7 +285,7 @@ con.query(sqls.fTb, [], function(err, result) {
 con.query(sqls.answerfail, [yestime], function(err, result) {
     if (err) throw err;
     for (var k in result) {
-        sysdb.query('insert into count_answerfailreason (failnum,reason,createdAt,updatedAt) values (?,?,?,?)', [result[k].toalcall, result[k].reason, time, time], function(err, re) {
+        sysdb.query('insert into count_answerfailreason (failnum,reason,user_agent,createdAt,updatedAt) values (?,?,?,?,?)', [result[k].toalcall, result[k].reason, result[k].user_agent, time, time], function(err, re) {
             console.log(err);
             console.log(re);
         })

@@ -529,33 +529,33 @@ router.get('/getCountAnswerFailDetailExcel', async(ctx, next) => {
 
 });
 
-// router.get('/getCountAnswerFailDetailExcel', async(ctx, next) => {
-//     let result = await new Promise((resolve, reject) => {
-//         con.query('select * from users', [], function(err, re) {
-//             console.log(err);
-//             console.log(re);
-//             resolve(re);
-//         });
-//     });
-//     let datas = [
-//         ['用户id', '电话', '姓名', '性别', '角色', '生日', '地址', '视力']
-//     ];
-//     for (let index in result) {
-//         let data = [result[index].id, result[index].tel, result[index].name, result[index].gender, result[index].role, result[index].birthday, result[index].address, result[index].eyesight];
-//         datas.push(data);
-//     }
+router.get('/customer', async(ctx, next) => {
+    let result = await new Promise((resolve, reject) => {
+        con.query('select * from users where role=8', [], function(err, re) {
+            console.log(err);
+            console.log(re);
+            resolve(re);
+        });
+    });
+    let datas = [
+        ['用户id', '电话', '姓名', '性别', '角色', '生日', '地址', '视力']
+    ];
+    for (let index in result) {
+        let data = [result[index].id, result[index].tel, result[index].name, result[index].gender, result[index].role, result[index].birthday, result[index].address, result[index].eyesight];
+        datas.push(data);
+    }
 
-//     let buffer = xlsx.build([{
-//         name: 'sheet1',
-//         data: datas
-//     }]);
+    let buffer = xlsx.build([{
+        name: 'sheet1',
+        data: datas
+    }]);
 
-//     fs.writeFileSync('public/uploads/produser.xlsx', buffer, { 'flag': 'w' }); //生成excel
-//     ctx.response.body = {
-//         code: 200,
-//         data: 'uploads/produser.xlsx'
-//     };
+    fs.writeFileSync('public/uploads/customer.xlsx', buffer, { 'flag': 'w' }); //生成excel
+    ctx.response.body = {
+        code: 200,
+        data: 'uploads/customer.xlsx'
+    };
 
-// });
+});
 
 module.exports = router;

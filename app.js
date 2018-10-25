@@ -13,7 +13,7 @@ const roles = require('./routes/roles')
 const tongji = require('./routes/tongji')
 const business = require('./routes/business')
 const appUser = require('./routes/appUser');
-
+const node = require('./routes/node');
 const cors = require('koa2-cors'); //解决跨域
 
 
@@ -47,6 +47,8 @@ app.use(roles.routes(), roles.allowedMethods())
 app.use(tongji.routes(), tongji.allowedMethods())
 app.use(business.routes(), business.allowedMethods())
 app.use(appUser.routes(), appUser.allowedMethods())
+app.use(node.routes(), node.allowedMethods())
+
 
 
 

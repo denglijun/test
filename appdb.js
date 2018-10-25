@@ -1,16 +1,16 @@
 var mysql = require('mysql');
 var tunnel = require('tunnel-ssh');
-var tunnelPort = '33334'; //can really be any free port used for tunneling
-module.exports = function() {
+module.exports = function(server) {
     return new Object({
+        tunnelPort: 33333, // can really be any free port used for tunneling
         /**
          * DB server configuration. Please note that due to the tunneling the server host
          * is localhost and the server port is the tunneling port. It is because the tunneling
          * creates a local port on localhost
          */
-        dbServer: {
+        dbServer: server || {
             host: '127.0.0.1',
-            port: tunnelPort,
+            port: 33333,
             user: 'root',
             password: 'WENhuai2158~!@',
             database: 're_dev'
@@ -22,10 +22,9 @@ module.exports = function() {
             remoteHost: '127.0.0.1', // mysql server host
             remotePort: 3306, // mysql server port
             localHost: '127.0.0.1',
-            localPort: tunnelPort, // a available local port
+            localPort: 33333, // a available local port
             verbose: true, // dump information to stdout
             disabled: false, //set this to true to disable tunnel (useful to keep architecture for local connections)
-            keepAlive: true,
             sshConfig: { //ssh2 configuration (https://github.com/mscdex/ssh2)
                 host: '47.100.110.99',
                 port: 22,
@@ -84,13 +83,16 @@ module.exports = function() {
             }
 
 
-            me.tunnel = tunnel(newStyleConfig, function(err, tunnel) {
+            me.tunnel = tunnel(newStyleConfig, function(err) {
                 console.log('Tunnel connected', err);
                 if (err) {
                     return callback(err);
-                } else {
-                    return callback(err, tunnel);
                 }
+
+                me.connection = me.connect(callback);
+                setTimeout(function() {
+                    me.tunnel.close();
+                }, 3000);
             });
         },
 
@@ -143,35 +145,6 @@ module.exports = function() {
             });
 
             return connection;
-        },
-        query: function(sql, values, callback) {
-            var me = this;
-            //  me.tunnel.close();
-            me.init(function(err, tnl) {
-                console.log(tnl);
-                if (err) {
-                    callback(err);
-                } else {
-                    var connection = mysql.createConnection(me.dbServer);
-                    connection.connect(function(err) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            connection.query(sql, values, function(err, rows) {
-                                if (err) {
-                                    callback(err);
-                                } else {
-                                    callback(err, rows);
-                                }
-                                connection.end();
-                                tnl.close();
-                            })
-                        }
-
-                    })
-
-                }
-            });
         }
     });
 

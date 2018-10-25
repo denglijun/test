@@ -1,28 +1,23 @@
 'use strict';
-module.exports = (sequelize,DataTypes) => {
-    const Node = sequelize.define('node',{
-        nodename : {
+module.exports = (sequelize, DataTypes) => {
+    const Node = sequelize.define('node', {
+        nodename: {
             type: DataTypes.STRING(64),
             allowNull: false,
             comment: "节点名称"
         },
-        pid : {
+        pid: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
             comment: "父节点id，无父节点默认为0",
         },
-        key : {
-            type: DataTypes.STRING(16),
-            allowNull: false,
-            comment: "节点标志符"
-        },
-        sort : {
+        sort: {
             type: DataTypes.INTEGER,
             allowNull: false,
             comment: '节点顺序'
         },
-        isshow : {
+        isshow: {
             type: DataTypes.INTEGER(2),
             allowNull: false,
             defaultValue: 1,
@@ -33,9 +28,24 @@ module.exports = (sequelize,DataTypes) => {
             allowNull: true,
             defaultValue: null,
             comment: '链接地址，无链接为javascript:void(0)'
+        },
+        type: {
+            type: DataTypes.INTEGER(2),
+            allowNull: false,
+            defaultValue: 1,
+            comment: '节点类型,1菜单，2按钮，3功能',
+        },
+        icon: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            comment: '图标',
+        },
+        mark: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            comment: '备注',
         }
-    },
-    {
+    }, {
         freezeTableName: true, //指示创建的数据表与model同名，而不是默认的model+'s'
         comment: '节点资源表',
         charset: 'utf8',
