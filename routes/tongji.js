@@ -15,7 +15,8 @@ const fs = require('fs');
 
 
 const moment = require("moment");
-const con = require('../appdb')();
+//const con = require('../appdb')();
+const con = require('../appdb3')();
 
 
 router.prefix('/tongji');

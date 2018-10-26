@@ -1,7 +1,7 @@
 const router = require('koa-router')();
 const sequelize = require('../models').sequelize;
-// const con = require('../appdb4');
-const con = require('../appdb3')();
+const con = require('../appdb4');
+// const con = require('../appdb3')();
 
 const moment = require('moment');
 const common = require('../lib/common.js');
@@ -326,7 +326,8 @@ router.get('/userCallDetail', async(ctx, next) => {
                 } else {
                     if (result[0].callnum > 0) {
                         let total = result[0].callnum;
-                        con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? order by call_orders.createdAt desc limit ?,?", [key1, key2, (parseInt(page) - 1) * parseInt(pagenum), parseInt(pagenum)], function(err, result) {
+                        con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and call_orders.user_id = call_orders.caller_id order by call_orders.createdAt desc limit ?,?", [key1, key2, (parseInt(page) - 1) * parseInt(pagenum), parseInt(pagenum)], function(err, result) {
+                            console.log(result);
                             if (err) {
                                 console.log(err);
                                 resolve({
@@ -352,7 +353,7 @@ router.get('/userCallDetail', async(ctx, next) => {
                                     result[index].calldate = moment(result[index].call_time).format('YYYY-MM-DD');
                                     result[index].calltime = moment(result[index].call_time).format('HH:mm:ss');
                                     result[index].hanguptime = moment(result[index].hangup_time).format('HH:mm:ss');
-                                    if (parseInt(result[index].chat_duration > 0)) {
+                                    if (parseInt(result[index].chat_duration) > 0) {
                                         result[index].chat_duration = common.sec_to_time(result[index].chat_duration);
                                     } else {
                                         result[index].chat_duration = "00:00:00";
@@ -411,7 +412,7 @@ router.get('/userCallDetail', async(ctx, next) => {
                 } else {
                     if (result[0].callnum > 0) {
                         let total = result[0].callnum;
-                        con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and users.tel=? order by call_orders.createdAt desc limit ?,?", [key1, key2, tel, (parseInt(page) - 1) * parseInt(pagenum), parseInt(pagenum)], function(err, result) {
+                        con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and users.tel=? and call_orders.user_id=call_orders.caller_id order by call_orders.createdAt desc limit ?,?", [key1, key2, tel, (parseInt(page) - 1) * parseInt(pagenum), parseInt(pagenum)], function(err, result) {
                             if (err) {
                                 console.log(err);
                                 resolve({
@@ -437,7 +438,7 @@ router.get('/userCallDetail', async(ctx, next) => {
                                     result[index].calldate = moment(result[index].call_time).format('YYYY-MM-DD');
                                     result[index].calltime = moment(result[index].call_time).format('HH:mm:ss');
                                     result[index].hanguptime = moment(result[index].hangup_time).format('HH:mm:ss');
-                                    if (parseInt(result[index].chat_duration > 0)) {
+                                    if (parseInt(result[index].chat_duration) > 0) {
                                         result[index].chat_duration = common.sec_to_time(result[index].chat_duration);
                                     } else {
                                         result[index].chat_duration = "00:00:00";
@@ -920,7 +921,7 @@ router.get('/userCallDetailExcel', async(ctx, next) => {
     }
     if (tel == '') {
         let re = await new Promise((resolve, reject) => {
-            con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? order by call_orders.createdAt desc", [key1, key2], function(err, result) {
+            con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and call_orders.user_id=call_orders.caller_id order by call_orders.createdAt desc", [key1, key2], function(err, result) {
                 if (err) {
                     console.log(err);
                     resolve({
@@ -946,7 +947,7 @@ router.get('/userCallDetailExcel', async(ctx, next) => {
                         result[index].calldate = moment(result[index].call_time).format('YYYY-MM-DD');
                         result[index].calltime = moment(result[index].call_time).format('HH:mm:ss');
                         result[index].hanguptime = moment(result[index].hangup_time).format('HH:mm:ss');
-                        if (parseInt(result[index].chat_duration > 0)) {
+                        if (parseInt(result[index].chat_duration) > 0) {
                             result[index].chat_duration = common.sec_to_time(result[index].chat_duration);
                         } else {
                             result[index].chat_duration = "00:00:00";
@@ -997,7 +998,7 @@ router.get('/userCallDetailExcel', async(ctx, next) => {
         ctx.response.body = re;
     } else {
         let re = await new Promise((resolve, reject) => {
-            con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and users.tel=? order by call_orders.createdAt desc", [key1, key2, tel], function(err, result) {
+            con.query("select call_orders.*,answered_calls.chat_id as aid,answered_calls.answer_time,chat_orders.chat_id as cid,chat_orders.ua,chat_orders.ub,chat_orders.start_time as chat_start_time,chat_orders.end_time as chat_end_time,chat_orders.duration as chat_duration,chat_orders.duration2,users.name,users.address,users.birthday,users.gender,users.tel,users.eyesight from call_orders left join users on call_orders.user_id=users.id left join answered_calls on call_orders.chat_id=answered_calls.chat_id left join chat_orders on call_orders.chat_id=chat_orders.chat_id where date_add(call_orders.createdAt, interval '08:00:00' hour_second) > ? and date_add(call_orders.createdAt, interval '08:00:00' hour_second) < ? and users.tel=? and call_orders.user_id=call_orders.caller_id order by call_orders.createdAt desc", [key1, key2, tel], function(err, result) {
                 if (err) {
                     console.log(err);
                     resolve({
@@ -1023,7 +1024,7 @@ router.get('/userCallDetailExcel', async(ctx, next) => {
                         result[index].calldate = moment(result[index].call_time).format('YYYY-MM-DD');
                         result[index].calltime = moment(result[index].call_time).format('HH:mm:ss');
                         result[index].hanguptime = moment(result[index].hangup_time).format('HH:mm:ss');
-                        if (parseInt(result[index].chat_duration > 0)) {
+                        if (parseInt(result[index].chat_duration) > 0) {
                             result[index].chat_duration = common.sec_to_time(result[index].chat_duration);
                         } else {
                             result[index].chat_duration = "00:00:00";
