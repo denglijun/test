@@ -1,8 +1,9 @@
 const router = require('koa-router')();
 const Wifi = require('../models').wifi;
 const sequelize = require('../models').sequelize;
-// const con = require('../appdb2');
-const con = require('../appdb3')();
+const con = require('../appdb2'); //服务器测试库
+// const con = require('../appdb4');//服务器正式库
+// const con = require('../appdb3')(); //本地
 const moment = require('moment');
 const time = moment().format('YYYY-MM-DD HH:mm:ss');
 const crypto = require('crypto');
@@ -60,6 +61,14 @@ router.get('/wifilist', async(ctx, next) => {
                                     data: ''
                                 });
                             } else {
+                                for (let index in result) {
+                                    let connectnum = parseInt(result[index].ok_counter) + parseInt(result[index].fail_counter);
+                                    if (connectnum > 0) {
+                                        result[index].successRate = Math.round(parseFloat(result[index].ok_counter) / parseFloat(connectnum) * 10000) / 100.00 + "%";
+                                    } else {
+                                        result[index].successRate = '0%';
+                                    }
+                                }
                                 resolve({
                                     code: 200,
                                     records: result,
@@ -292,6 +301,7 @@ router.post('/customerAdd', async(ctx, next) => {
     let paramlist = ctx.request.body.params;
     let pwd = paramlist.tel + paramlist.password;
     pwd = crypto.createHash('MD5').update(pwd, 'utf-8').digest('hex');
+    console.log(paramlist);
     let re = await new Promise((resolve, reject) => {
         con.query(' select id from `users` where `tel`= ? ', [paramlist.tel], function(err, result) {
             if (err) {
@@ -302,7 +312,7 @@ router.post('/customerAdd', async(ctx, next) => {
                 });
             } else {
                 if (result.length < 1) {
-                    con.query('INSERT INTO `users` (`tel`,`name`,`gender`,`avatar`,`password`,`role`,`birthday`,`address`,`eyesight`,`service`,`auth`,`createdAt`,`updatedAt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', [paramlist.tel, paramlist.name, paramlist.gender, paramlist.avatar, pwd, 8, paramlist.birthday, paramlist.address, paramlist.eyssight, 0, 0, time, time], function(err, result) {
+                    con.query('INSERT INTO `users` (`tel`,`name`,`gender`,`avatar`,`password`,`role`,`birthday`,`address`,`eyesight`,`service`,`auth`,`createdAt`,`updatedAt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', [paramlist.tel, paramlist.name, paramlist.gender, '', pwd, 8, paramlist.birthday, paramlist.address, paramlist.eyesight, 0, 0, time, time], function(err, result) {
                         if (err) {
                             resolve({
                                 code: 10004,

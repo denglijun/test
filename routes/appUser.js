@@ -1,6 +1,6 @@
 const router = require('koa-router')();
 const sequelize = require('../models').sequelize;
-const con = require('../appdb4');
+const con = require('../appdb4'); //服务器正式库
 // const con = require('../appdb3')();
 
 const moment = require('moment');

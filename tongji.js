@@ -310,4 +310,14 @@ con.query(sqls.chatdetail, [yestime], function(err, result) {
             console.log(result);
         });
     }
-})
+});
+
+con.query(sqls.countSignal, [yestime], function(err, result) {
+    if (err) throw err;
+    for (var t in result) {
+        sysdb.query('insert into count_signal (chat_id,call_type,caller_uid,caller_tel,callee_uid,callee_tel,hanguper_uid,hanguper_tel,call_time,arrived_time,answer_time,hangup_time,notified_count,notified_family,notified_cs,notified_vt,notified_msg,notified_push,arrived_count,createdAt,updatedAt) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [result[t].chat_id, result[t].call_type, result[t].caller_uid, result[t].caller_tel, result[t].callee_uid, result[t].callee_tel, result[t].hanguper_uid, result[t].hanguper_tel, result[t].call_time, result[t].arrived_time, result[t].answer_time, result[t].hangup_time, result[t].notified_count, result[t].notified_family, result[t].notified_cs, result[t].notified_vt, result[t].notified_msg, result[t].notified_push, result[t].arrived_count, time, time], function(err, result) {
+            console.log(err);
+            console.log(result);
+        });
+    }
+});

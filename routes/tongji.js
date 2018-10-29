@@ -7,6 +7,7 @@ const CountBlind2Friend = require('../models').CountBlind2Friend;
 const CountAnswerFailReason = require('../models').CountAnswerFailReason;
 const CountCallDetail = require('../models').CountCallDetail;
 const CountChatDetail = require('../models').CountChatDetail;
+const CountSignal = require('../models').CountSignal;
 const Sequelize = require('../models').sequelize;
 const xlsx = require('node-xlsx');
 const send = require('koa-send');
@@ -16,7 +17,7 @@ const fs = require('fs');
 
 const moment = require("moment");
 //const con = require('../appdb')();
-const con = require('../appdb3')();
+// const con = require('../appdb3')();
 
 
 router.prefix('/tongji');
@@ -530,33 +531,97 @@ router.get('/getCountAnswerFailDetailExcel', async(ctx, next) => {
 
 });
 
-router.get('/customer', async(ctx, next) => {
-    let result = await new Promise((resolve, reject) => {
-        con.query('select * from users where role=8', [], function(err, re) {
-            console.log(err);
-            console.log(re);
-            resolve(re);
-        });
-    });
-    let datas = [
-        ['用户id', '电话', '姓名', '性别', '角色', '生日', '地址', '视力']
-    ];
-    for (let index in result) {
-        let data = [result[index].id, result[index].tel, result[index].name, result[index].gender, result[index].role, result[index].birthday, result[index].address, result[index].eyesight];
-        datas.push(data);
+// router.get('/customer', async(ctx, next) => {
+//     let result = await new Promise((resolve, reject) => {
+//         con.query('select * from users where role=8', [], function(err, re) {
+//             console.log(err);
+//             console.log(re);
+//             resolve(re);
+//         });
+//     });
+//     let datas = [
+//         ['用户id', '电话', '姓名', '性别', '角色', '生日', '地址', '视力']
+//     ];
+//     for (let index in result) {
+//         let data = [result[index].id, result[index].tel, result[index].name, result[index].gender, result[index].role, result[index].birthday, result[index].address, result[index].eyesight];
+//         datas.push(data);
+//     }
+
+//     let buffer = xlsx.build([{
+//         name: 'sheet1',
+//         data: datas
+//     }]);
+
+//     fs.writeFileSync('public/uploads/customer.xlsx', buffer, { 'flag': 'w' }); //生成excel
+//     ctx.response.body = {
+//         code: 200,
+//         data: 'uploads/customer.xlsx'
+//     };
+
+// });
+
+router.get('/getCountSignal', async(ctx, next) => {
+    let page = ctx.query.pageNo;
+    let pagenum = ctx.query.pageSize;
+    let key = ctx.query['key[]'];
+    let result = [];
+    if (typeof(key) != 'undefined') {
+        key1 = key[0];
+        key2 = key[1];
+    } else {
+        key1 = moment(Date.now()).format('YYYY-MM-DD');
+        key2 = moment(Date.now() + 24 * 60 * 60 * 1000).format('YYYY-MM-DD');
     }
-
-    let buffer = xlsx.build([{
-        name: 'sheet1',
-        data: datas
-    }]);
-
-    fs.writeFileSync('public/uploads/customer.xlsx', buffer, { 'flag': 'w' }); //生成excel
-    ctx.response.body = {
-        code: 200,
-        data: 'uploads/customer.xlsx'
-    };
-
+    let total = await CountSignal.findAll({
+        where: {
+            createdAt: {
+                [Sequelize.Op.gt]: key1,
+                [Sequelize.Op.lt]: key2
+            }
+        }
+    });
+    let rows = await CountSignal.findAll({
+        where: {
+            createdAt: {
+                [Sequelize.Op.gt]: key1,
+                [Sequelize.Op.lt]: key2
+            }
+        },
+        offset: (parseInt(page) - 1) * parseInt(pagenum),
+        limit: parseInt(pagenum),
+        order: [
+            ['call_time', 'DESC']
+        ]
+    });
+    for (let index in rows) {
+        if (rows[index].call_type == 0) {
+            rows[index].call_type = '全部';
+        }
+        if (rows[index].call_type == 1) {
+            rows[index].call_type = '亲友';
+        }
+        if (rows[index].call_type == 2) {
+            rows[index].call_type = '志愿者';
+        }
+        if (rows[index].call_type == 3) {
+            rows[index].call_type = '客服';
+        }
+        if (rows[index].dataValues.arrived_time > 0) {
+            rows[index].dataValues.call_arrived = rows[index].dataValues.arrived_time - rows[index].dataValues.call_time;
+        } else {
+            rows[index].dataValues.call_arrived = 0;
+        }
+        if (rows[index].dataValues.answer_time > 0) {
+            rows[index].dataValues.call_answer = rows[index].dataValues.answer_time - rows[index].dataValues.call_time;
+        } else {
+            rows[index].dataValues.call_answer = 0;
+        }
+        if (rows[index].dataValues.hangup_time > 0) {
+            rows[index].dataValues.call_hangup = rows[index].dataValues.hangup_time - rows[index].dataValues.call_time;
+        } else {
+            rows[index].dataValues.call_hangup = 0;
+        }
+    }
+    ctx.response.body = { records: rows, total: total.length };
 });
-
 module.exports = router;
